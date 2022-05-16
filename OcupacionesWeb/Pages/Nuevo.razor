@@ -1,0 +1,52 @@
+﻿@page "/nuevo"
+@inject IJSRuntime jsRuntime
+
+<PageTitle>Nueva Ocupacion</PageTitle>
+
+<h1 class="mb-5">Ocupación</h1>
+<EditForm Model="@ocupacion" class="container needs-validation was-validated ">
+    <div class="row g-5 mb-2">
+        <div class="col-sm-2">
+            <label class="label-control" for="Descripcion">Descripción</label>
+        </div>
+        <div class="col-sm-5">
+            <input type="text" class="form-control" @bind="ocupacion.Descripcion" placeholder="Descripción" required>
+        </div>
+    </div>
+    <div class="row g-5 mb-5">
+        <div class="col-sm-2">
+            <label class="label-control" for="Salario">Salario</label>
+        </div>
+        <div class="col-sm-5">
+            <input type="number" class="form-control" @bind="ocupacion.Salario" placeholder="Salario" required min="1">
+        </div>
+    </div>
+    <button class="btn btn-primary" @onclick="guardar">Guardar</button>
+</EditForm>
+
+@code {
+    public Ocupacion ocupacion = new Ocupacion();
+
+    private async void guardar()
+    {
+        ocupacion.OcupacionID = 0;
+
+        if (ocupacion.Salario > 0 && !String.IsNullOrWhiteSpace(ocupacion.Descripcion)) {
+            Contexto contexto = new Contexto();
+            
+            contexto.Add(ocupacion);
+
+            contexto.SaveChanges();
+
+            ocupacion = new Ocupacion();
+        } else {
+            await Alert();
+        }
+
+    }
+
+    private async Task Alert()
+    {
+        await jsRuntime.InvokeAsync<object>("Alert", "Datos invalidos, intente de nuevo...");
+    }
+}
